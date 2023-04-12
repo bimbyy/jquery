@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Movie Rating App</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="app.js"></script>
+    <style>
+      .title {
+        margin: 10px;
+        padding: 10px;
+        border: 1px solid black;
+      }
+      .remove {
+        margin-left: 10px;
+      }
+      button.active {
+        background-color: lightblue;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Movie Rating App</h1>
+    <form id="movie-form">
+      <label for="title">Title:</label>
+      <input type="text" id="title" name="title" required>
+      <label for="rating">Rating:</label>
+      <input type="number" id="rating" name="rating" min="0" max="10" required>
+      <button type="submit">Add Movie</button>
+    </form>
+    <div>
+      <button id="sort-title-asc">Sort by Title (A-Z)</button>
+      <button id="sort-title-desc">Sort by Title (Z-A)</button>
+      <button id="sort-rating-asc">Sort by Rating (Low-High)</button>
+      <button id="sort-rating-desc">Sort by Rating (High-Low)</button>
+    </div>
+    <div id="titles"></div>
+  </body>
+  <script>
+    $(document).ready(function() {
+  var titles = [];
+
+  $('#movie-form').submit(function(event) {
+    event.preventDefault();
+
+    var title = $('#title').val();
+    var rating = parseInt($('#rating').val());
+
+    if (isNaN(rating) || rating < 0 || rating > 10) {
+      alert('Please enter a rating between 0 and 10.');
+      return;
+    }
+
+    if (title.length < 2) {
+      alert('Please enter a title with at least 2 characters.');
+      return;
+    }
+
+    var movie = {
+      title: title,
+      rating: rating
+    };
+
+    titles.push(movie);
+
+    $('#title').val('');
+    $('#rating').val('');
+
+    renderTitles(titles);
+  });
+
+  $('#sort-title-asc').click(function() {
+    $('button').removeClass('active');
+    $(this).addClass('active');
+
+    titles.sort(function(a, b) {
+      var titleA = a.title.toUpperCase();
+      var titleB = b.title.toUpperCase();
+
+      if (titleA < titleB) {
+        return -1;
+      }
+      if (titleA > titleB) {
+        return 1;
+      }
+      return 0;
+    });
+
+    renderTitles(titles);
+  });
+
+  $('#sort-title-desc').click(function() {
+    $('button').removeClass('active');
+    $(this).addClass('active');
+
+    titles.sort(function(a, b) {
+      var titleA = a.title.toUpperCase();
+      var titleB = b.title.toUpperCase();
+
+      if (titleA > titleB) {
+        return -1;
+      }
+      if (titleA < titleB) {
+        return 1;
+      }
+      return 0;
+    });
+
+    renderTitles(titles);
+  });
+
+  $('#sort-rating-asc').click(function() {
+    $('button').removeClass('active');
+    $(this).addClass('active');
+
+    titles.sort(function(a, b) {
+      return a.rating - b.rating;
+    });
+
+    renderTitles(titles);
+  });
+
+  $('#sort-rating-desc').click(function() {
+    $('button').removeClass('active');
+    $(this).addClass('active');
+
+    titles.sort(function(a, b) {
+      return b.rating - a.rating;
+    });
+
+    renderTitles(titles);
+  });
+
+  $('#titles').on('click', '.remove', function() {
+    var title = $(this).parent().text().split(',')[0];
+    titles = titles.filter(function(obj) {
+      return obj.title !== title;
+    });
+
+    renderTitles(titles);
+  });
+
+  function renderTitles(titles) {
+    $('#titles').empty();
+
+    for (var i = 0; i < titles.length; i++) {
+      var title = titles[i].title;
+      var rating = titles[i].rating;
+
+      var titleElem = $('<div>').addClass('title').text(title + ', ' + rating);
+      var removeElem = $('<button>').addClass('remove').text('remove');
+      titleElem.append(removeElem);
+
+      $('#titles').append(titleElem);
+    }
+  }
+});
+  </script>
+</html>
